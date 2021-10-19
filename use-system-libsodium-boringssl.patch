@@ -1,0 +1,41 @@
+From 8b158c1b84c775dcaa5a543c9aa6c4e269bf7084 Mon Sep 17 00:00:00 2001
+From: Jim Garrison <jim@garrison.cc>
+Date: Sat, 16 Oct 2021 22:00:31 -0400
+Subject: [PATCH] Use system versions of libsodium and boringssl
+
+---
+ Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index b3a592b1..2b11a4cf 100644
+--- a/Makefile
++++ b/Makefile
+@@ -45,7 +45,7 @@ CXXFLAGS2=-std=c++1z $(WARNINGS) $(CXXFLAGS) -DSANDSTORM_BUILD=$(BUILD) -DKJ_HAS
+ CFLAGS2=$(CFLAGS) -pthread -fPIC -DKJ_STD_COMPAT
+ # -lrt is not used by sandstorm itself, but the test app uses it. It would be
+ #  nice if we could not link everything against it.
+-LIBS2=$(LIBS) deps/libsodium/build/src/libsodium/.libs/libsodium.a deps/boringssl/build/ssl/libssl.a deps/boringssl/build/crypto/libcrypto.a -lz -ldl -pthread -lrt
++LIBS2=$(LIBS) -lsodium -lssl -lcrypto -lz -ldl -pthread -lrt
+ 
+ define color
+   printf '\033[0;34m==== $1 ====\033[0m\n'
+@@ -264,13 +264,13 @@ tmp/ekam-bin: tmp/.deps
+ 	    (cd deps/ekam && $(MAKE) bin/ekam-bootstrap && \
+ 	     cd ../.. && ln -s ../deps/ekam/bin/ekam-bootstrap tmp/ekam-bin)
+ 
+-tmp/.ekam-run: tmp/ekam-bin src/sandstorm/* tmp/.deps deps/boringssl/build/ssl/libssl.a deps/libsodium/build/src/libsodium/.libs/libsodium.a | deps/llvm-build
++tmp/.ekam-run: tmp/ekam-bin src/sandstorm/* tmp/.deps
+ 	@$(call color,building sandstorm with ekam)
+ 	@CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS2)" CXXFLAGS="$(CXXFLAGS2)" \
+ 	    LIBS="$(LIBS2)" NODEJS=$(NODEJS) tmp/ekam-bin -j$(PARALLEL)
+ 	@touch tmp/.ekam-run
+ 
+-continuous: tmp/.deps deps/boringssl/build/ssl/libssl.a deps/libsodium/build/src/libsodium/.libs/libsodium.a | deps/llvm-build
++continuous: tmp/.deps
+ 	@CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS2)" CXXFLAGS="$(CXXFLAGS2)" \
+ 	    LIBS="$(LIBS2)" NODEJS=$(NODEJS) $(EKAM) -j$(PARALLEL) -c -n :41315 || \
+ 	    ($(call color,You probably need to install ekam and put it on your path; see github.com/sandstorm-io/ekam) && false)
+-- 
+2.33.1
+
