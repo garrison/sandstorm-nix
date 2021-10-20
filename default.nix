@@ -1,4 +1,4 @@
-# Start with a version on nixpkgs that includes ekam
+# Start with a version of nixpkgs that includes ekam
 # https://github.com/NixOS/nixpkgs/pull/141064
 #
 # TODO(soon): change this version to one that passes all tests, per
