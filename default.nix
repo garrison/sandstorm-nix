@@ -77,7 +77,9 @@ stdenv.mkDerivation rec {
   meta = with lib; {
     description = "A self-hostable web productivity suite";
     longDescription = ''
-      Sandstorm is an open source project built by a community of volunteers with the goal of making it really easy to run open source web applications.
+      Sandstorm is an open source project built by a community of
+      volunteers with the goal of making it really easy to run open
+      source web applications.
     '';
     license = licenses.asl20;
     platforms = [ "x86_64-linux" ];
