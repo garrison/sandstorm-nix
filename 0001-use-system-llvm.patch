@@ -1,0 +1,61 @@
+From b596f7416ccf8e685ddffff36de3dc75cf93917a Mon Sep 17 00:00:00 2001
+From: Jim Garrison <jim@garrison.cc>
+Date: Tue, 19 Oct 2021 19:48:36 -0400
+Subject: [PATCH 1/3] Use system LLVM
+
+---
+ Makefile | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index b3a592b1..9db0fe00 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,8 +16,8 @@
+ 
+ # You may override the following vars on the command line to suit
+ # your config.
+-CC=$(shell pwd)/deps/llvm-build/Release+Asserts/bin/clang
+-CXX=$(shell pwd)/deps/llvm-build/Release+Asserts/bin/clang++
++CC=clang
++CXX=clang++
+ CFLAGS=-O2 -Wall -g
+ CXXFLAGS=$(CFLAGS)
+ BUILD=0
+@@ -233,7 +233,7 @@ deps/llvm-build: | tmp/.deps
+ # ====================================================================
+ # build BoringSSL
+ 
+-deps/boringssl/build/Makefile: | tmp/.deps deps/llvm-build
++deps/boringssl/build/Makefile: | tmp/.deps
+ 	@$(call color,configuring BoringSSL)
+ 	@mkdir -p deps/boringssl/build
+ 	cd deps/boringssl/build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER="$(CC)" -DCMAKE_CXX_COMPILER="$(CXX)" -DCMAKE_C_FLAGS="-fPIE" -DCMAKE_CXX_FLAGS="-fPIE" ..
+@@ -245,7 +245,7 @@ deps/boringssl/build/ssl/libssl.a: deps/boringssl/build/Makefile
+ # ====================================================================
+ # build libsodium
+ 
+-deps/libsodium/build/Makefile: | tmp/.deps deps/llvm-build
++deps/libsodium/build/Makefile: | tmp/.deps
+ 	@$(call color,configuring libsodium)
+ 	@mkdir -p deps/libsodium/build
+ 	cd deps/libsodium/build && ../configure --disable-shared CC="$(CC)"
+@@ -264,13 +264,13 @@ tmp/ekam-bin: tmp/.deps
+ 	    (cd deps/ekam && $(MAKE) bin/ekam-bootstrap && \
+ 	     cd ../.. && ln -s ../deps/ekam/bin/ekam-bootstrap tmp/ekam-bin)
+ 
+-tmp/.ekam-run: tmp/ekam-bin src/sandstorm/* tmp/.deps deps/boringssl/build/ssl/libssl.a deps/libsodium/build/src/libsodium/.libs/libsodium.a | deps/llvm-build
++tmp/.ekam-run: tmp/ekam-bin src/sandstorm/* tmp/.deps deps/boringssl/build/ssl/libssl.a deps/libsodium/build/src/libsodium/.libs/libsodium.a
+ 	@$(call color,building sandstorm with ekam)
+ 	@CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS2)" CXXFLAGS="$(CXXFLAGS2)" \
+ 	    LIBS="$(LIBS2)" NODEJS=$(NODEJS) tmp/ekam-bin -j$(PARALLEL)
+ 	@touch tmp/.ekam-run
+ 
+-continuous: tmp/.deps deps/boringssl/build/ssl/libssl.a deps/libsodium/build/src/libsodium/.libs/libsodium.a | deps/llvm-build
++continuous: tmp/.deps deps/boringssl/build/ssl/libssl.a deps/libsodium/build/src/libsodium/.libs/libsodium.a
+ 	@CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS2)" CXXFLAGS="$(CXXFLAGS2)" \
+ 	    LIBS="$(LIBS2)" NODEJS=$(NODEJS) $(EKAM) -j$(PARALLEL) -c -n :41315 || \
+ 	    ($(call color,You probably need to install ekam and put it on your path; see github.com/sandstorm-io/ekam) && false)
+-- 
+2.31.1
+

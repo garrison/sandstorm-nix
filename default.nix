@@ -37,7 +37,9 @@ stdenv.mkDerivation rec {
   ];
 
   patches = [
-    ./use-system-libsodium-boringssl.patch
+    ./0001-use-system-llvm.patch
+    ./0002-use-system-libsodium.patch
+    ./0003-use-system-boringssl.patch
   ];
 
   postPatch = ''
@@ -52,8 +54,6 @@ stdenv.mkDerivation rec {
   '';
 
   makeFlags = [
-    "CC=clang"
-    "CXX=clang++"
     "PARALLEL=$(NIX_BUILD_CORES)"
   ];
 
