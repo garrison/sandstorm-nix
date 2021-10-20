@@ -58,6 +58,8 @@ stdenv.mkDerivation rec {
   ];
 
   preBuild = ''
+    makeFlagsArray+=(LIBS="$NIX_LDFLAGS")
+
     # NIX_ENFORCE_PURITY prevents ld from linking against anything
     # outside of the nix store -- but ekam builds capnp locally and
     # links against it, so that causes the build to fail. So, we turn
@@ -65,8 +67,6 @@ stdenv.mkDerivation rec {
     #
     # See: https://nixos.wiki/wiki/Development_environment_with_nix-shell#Troubleshooting
     unset NIX_ENFORCE_PURITY
-
-    makeFlagsArray+=(LIBS="$NIX_LDFLAGS")
   '';
 
   buildFlags = [ "fast" ];
