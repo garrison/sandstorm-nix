@@ -73,6 +73,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir $out
+    cp sandstorm-*.tar.xz $out
   '';
 
   meta = with lib; {
