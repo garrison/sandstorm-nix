@@ -1,12 +1,9 @@
 # Start with a version of nixpkgs that includes ekam
 # https://github.com/NixOS/nixpkgs/pull/141064
-#
-# TODO(soon): change this version to one that passes all tests, per
-# https://status.nixos.org/
 { pkgs ? import (builtins.fetchTarball {
-  name = "nixpkgs-unstable-2021-10-18";
-  url = "https://github.com/NixOS/nixpkgs/archive/0777166e161f24d3af15d5b1a75273859669e216.tar.gz";
-  sha256 = "1vk70781bxh3f0v4q740sn42ayl63ain4g25ysamxbjfn9bv326d";
+  name = "nixpkgs-unstable-2021-10-22";
+  url = "https://github.com/NixOS/nixpkgs/archive/1cab3e231b41f38f2d2cbf5617eb7b88e433428a.tar.gz";
+  sha256 = "18h0csq9180yb9v5k713cq645pfwpx2fs21vj2nb3img3y9xr149";
 }) {} }:
 
 with pkgs;
