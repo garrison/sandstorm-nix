@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
     leaveDotGit = true;
   };
 
-  nativeBuildInputs = [ git which ekam strace ];
+  nativeBuildInputs = [ git which ekam strace bison flex ];
 
   buildInputs = [
     xz zip unzip
