@@ -22,7 +22,7 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "sandstorm";
-  version = "0.289";
+  version = "0.290";
 
   # leaveDotGit is not completely deterministic; the sha256 below *seems*
   # to change when a commit is added to the master branch of sandstorm
@@ -31,7 +31,7 @@ stdenv.mkDerivation rec {
   src = fetchgit {
     url = "https://github.com/sandstorm-io/sandstorm.git";
     rev = "v${version}";
-    sha256 = "08az9yz0h69ry620skkh4wqr35fkym730ki8an6iw9qhj2z04s8q";
+    sha256 = "1bxf1b1af0yzp9hxa20wbag3p984f8kala275zcwcirmwr98vwcy";
     fetchSubmodules = true;
     leaveDotGit = true;
   };
