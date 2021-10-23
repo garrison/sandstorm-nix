@@ -47,6 +47,10 @@ stdenv.mkDerivation rec {
     substituteInPlace deps/capnproto/c++/src/kj/filesystem-disk-test.c++ \
       --replace "/var/tmp" "/tmp"
 
+    # A sandstorm test expects /bin/true to exist
+    substituteInPlace src/sandstorm/util-test.c++ \
+      --replace "/bin/true" "${coreutils}/bin/true"
+
     # Use the system-provided ekam
     substituteInPlace Makefile --replace "tmp/ekam-bin -j" "ekam -j"
   '';
