@@ -34,6 +34,7 @@ stdenv.mkDerivation rec {
     meteor discount
     boringssl clang libcap libseccomp libsodium
     zlib.static pkgsStatic.libsodium
+    stdenv.glibc.out stdenv.glibc.static
   ];
 
   patches = [
