@@ -7,6 +7,19 @@
 }) {} }:
 
 with pkgs;
+let
+  meteor_version = "2.3.5";
+  meteor-unpacked = fetchTarball {
+    url = "https://s3.amazonaws.com/com.meteor.static/packages-bootstrap/${meteor_version}/meteor-bootstrap-os.linux.x86_64.tar.gz";
+    sha256 = "0kcwq3d8s3c5i2kd85y9m8nb4632j7wqvfjh8xlsp6097n2h6c7v";
+  };
+  meteor-dev_bundle = "${meteor-unpacked}/packages/meteor-tool/${meteor_version}/mt-os.linux.x86_64/dev_bundle";
+  meteor-1_8_2 = fetchTarball {
+    url = "https://s3.amazonaws.com/com.meteor.static/packages-bootstrap/1.8.2/meteor-bootstrap-os.linux.x86_64.tar.gz";
+    sha256 = "02ic6h9xl69d8b8ydh30dvrxcjgn73yx4h438y8gab9v5g9annjc";
+  };
+  meteor-dev_bundle-icons = "${meteor-1_8_2}/packages/meteor-tool/1.8.2/mt-os.linux.x86_64/dev_bundle";
+in
 stdenv.mkDerivation rec {
   pname = "sandstorm";
   version = "0.289";
@@ -28,7 +41,7 @@ stdenv.mkDerivation rec {
   buildInputs = [
     xz zip unzip
     curl python3 zlib
-    meteor discount
+    discount
     boringssl clang libcap libseccomp libsodium
     zlib.static pkgsStatic.libsodium
     stdenv.glibc.out stdenv.glibc.static
@@ -58,6 +71,8 @@ stdenv.mkDerivation rec {
       --replace "/usr/bin/env bash" "${bash}/bin/bash"
     substituteInPlace src/sandstorm/seccomp-bpf/clean-header.ekam-rule \
       --replace "/usr/bin/env bash" "${bash}/bin/bash"
+    substituteInPlace deps/node-capnp/build.js \
+      --replace "/usr/bin/env node" "${meteor-dev_bundle}/bin/node"
 
     # Use the system-provided ekam
     substituteInPlace Makefile --replace "tmp/ekam-bin -j" "ekam -j"
@@ -68,6 +83,13 @@ stdenv.mkDerivation rec {
   ];
 
   preBuild = ''
+    cat >find-meteor-dev-bundle.sh <<-EOF
+      #!${bash}/bin/bash
+      echo ${meteor-dev_bundle}
+    EOF
+    makeFlagsArray+=(METEOR_DEV_BUNDLE_ICONS="${meteor-dev_bundle-icons}")
+
+    makeFlagsArray+=(CFLAGS="-O2 -Wall -g -I${meteor-dev_bundle}/include/node")
     makeFlagsArray+=(LIBS="$NIX_LDFLAGS")
 
     # NIX_ENFORCE_PURITY prevents ld from linking against anything
