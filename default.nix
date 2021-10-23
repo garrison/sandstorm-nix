@@ -51,6 +51,14 @@ stdenv.mkDerivation rec {
     substituteInPlace src/sandstorm/util-test.c++ \
       --replace "/bin/true" "${coreutils}/bin/true"
 
+    # Lots of files expect /usr/bin/env
+    substituteInPlace src/bpf_asm/lex-yacc.ekam-rule \
+      --replace "/usr/bin/env bash" "${bash}/bin/bash"
+    substituteInPlace src/sandstorm/seccomp-bpf/bpf_asm.ekam-rule \
+      --replace "/usr/bin/env bash" "${bash}/bin/bash"
+    substituteInPlace src/sandstorm/seccomp-bpf/clean-header.ekam-rule \
+      --replace "/usr/bin/env bash" "${bash}/bin/bash"
+
     # Use the system-provided ekam
     substituteInPlace Makefile --replace "tmp/ekam-bin -j" "ekam -j"
   '';
