@@ -1,3 +1,5 @@
+# sandstorm-nix
+
 Work-in-progress attempt to build [Sandstorm] using [nixpkgs].
 
 1. [Install Nix](https://nixos.org/guides/install-nix.html)
@@ -8,3 +10,8 @@ Work-in-progress attempt to build [Sandstorm] using [nixpkgs].
 
 [Sandstorm]: https://sandstorm.io/
 [nixpkgs]: https://github.com/NixOS/nixpkgs
+
+## Related threads
+
+- https://github.com/NixOS/nixpkgs/issues/79204
+- https://github.com/sandstorm-io/sandstorm/issues/245
