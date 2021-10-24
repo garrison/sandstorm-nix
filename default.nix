@@ -78,6 +78,12 @@ stdenv.mkDerivation rec {
     substituteInPlace deps/node-capnp/build.js \
       --replace "/usr/bin/env node" "${meteor-dev_bundle}/bin/node"
 
+    # Providing the boringssl static libraries explicitly by their
+    # filenames seems to be the only way to avoid some "undefined
+    # reference" errors.
+    substituteInPlace Makefile --replace "-lssl -lcrypto" \
+      "${boringssl}/lib/libssl.a ${boringssl}/lib/libcrypto.a"
+
     # Use the system-provided ekam
     substituteInPlace Makefile --replace "tmp/ekam-bin -j" "ekam -j"
   '';
