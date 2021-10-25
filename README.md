@@ -15,3 +15,4 @@ Work-in-progress attempt to build [Sandstorm] using [nixpkgs].
 
 - https://github.com/NixOS/nixpkgs/issues/79204
 - https://github.com/sandstorm-io/sandstorm/issues/245
+- https://github.com/sandstormports/community-project/issues/16
