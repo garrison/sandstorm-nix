@@ -513,7 +513,6 @@ let
         passAsFile = [ "includeScript" "pinpointDependenciesScript" ];
 
         installPhase = ''
-          set -x
           source ${installPackage}
 
           mkdir -p $out/${packageName}
