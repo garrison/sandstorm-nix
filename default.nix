@@ -31,7 +31,7 @@ let
   '') // {
     src = fetchurl {
       url = "https://nodejs.org/dist/v14.17.5/node-v14.17.5.tar.xz";
-      sha256 = "1a0zj505nhpfcj19qvjy2hvc5a7gadykv51y0rc6032qhzzsgca2";
+      hash = "sha256-QrGn/4dYDGBYBj6UPX1T76jCNhRebpyCZO5CW0CRH6g=";
     };
   };
   meteor-1_8_2 = fetchurl {
@@ -43,9 +43,9 @@ let
   sandstorm-src = fetchgit {
     url = "https://github.com/sandstorm-io/sandstorm.git";
     rev = "v${version}";
-    hash = "sha256-yt8eQ4T94OgxtZ7iHzvV0PjEBzrUuZ1qabJdN/PvQiM=";
+    #hash = "sha256-L2V88SOguiDu+uPkntJkJ75i3PY9qkc0o2oUfK/RTGY";
+    hash = "sha256-fD9Skpt2D5MtJz7kJsbw1ycSWr/ntzcFT4lToGZZU/o=";
     fetchSubmodules = true;
-    leaveDotGit = true;
   };
   shell-node-env-deps = (callPackage ./shell-node-env {
     nodejs = meteor-nodejs;
@@ -80,16 +80,16 @@ let
     dontFixup = true;
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash =  "sha256-z2G28evNzEkTwB3lptMwEpBtsdYRva8XrRdQYspgMiY=";
+    outputHash =  "sha256-WORdnZ8Dr8+jq31GbOsrKY3O0sfYk80DDOSQTX+ZFZM=";
   };
   old-sandstorm = fetchurl {
     url = "https://dl.sandstorm.io/sandstorm-171.tar.xz";
     sha256 = "ebffd643dffeba349f139bee34e4ce33fd9b1298fafc1d6a31eb35a191059a99";
   };
 in
-
-stdenv.mkDerivation rec {
-  pname = "sandstorm";
+rec {
+sandstorm-bundle = stdenv.mkDerivation rec {
+  pname = "sandstorm-bundle";
   version = "0.297";
 
   # leaveDotGit is not completely deterministic; the sha256 below *seems*
@@ -114,6 +114,7 @@ stdenv.mkDerivation rec {
     ./0002-use-system-libsodium.patch
     ./0003-use-system-boringssl.patch
     ./0004-copy-node-deps.patch
+    ./0005-no-update-submodules.patch
   ];
 
   postPatch = ''
@@ -152,9 +153,10 @@ stdenv.mkDerivation rec {
 
     patchShebangs make-bundle.sh
     substituteInPlace make-bundle.sh --replace "@SERVER_NODE_MODULES@" "${server-node-env-deps}/lib/node_modules"
-
+    for exe in bin/*; do
+      patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $exe
+    done
   '';
-
   makeFlags = [
     "PARALLEL=$(NIX_BUILD_CORES)"
   ];
@@ -200,4 +202,25 @@ stdenv.mkDerivation rec {
     platforms = [ "x86_64-linux" ];
     maintainers = [ maintainers.evils ];
   };
+};
+sandstormWithConfig = configFile:
+  stdenv.mkDerivation {
+    name = "sandstorm";
+    version = "0.297";
+    src = "${sandstorm-bundle}/sandstorm-0-fast.tar.xz";
+    buildInputs = [ openssl ];
+    libPath = lib.makeLibraryPath [ zlib stdenv.cc.cc.lib ];
+    installPhase = ''
+    mkdir $out
+    cp -r * $out
+    ln -s ${configFile} $out/sandstorm.conf
+    '';
+    postFixup = ''
+    patchelf --set-rpath $libPath $out/bin/mongo
+    patchelf --set-rpath $libPath $out/bin/mongod
+    for exe in $out/bin/*; do
+      patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $exe || true
+    done
+    '';
+};
 }
