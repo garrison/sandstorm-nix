@@ -80,7 +80,7 @@ let
     dontFixup = true;
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash =  "sha256-WORdnZ8Dr8+jq31GbOsrKY3O0sfYk80DDOSQTX+ZFZM=";
+    outputHash =  "sha256-0G0X45DAIDZF0IJKJ/OArHzKNjWUo3IIRbFWjwvXDKs=";
   };
   old-sandstorm = fetchurl {
     url = "https://dl.sandstorm.io/sandstorm-171.tar.xz";
@@ -106,7 +106,7 @@ sandstorm-bundle = stdenv.mkDerivation rec {
     discount
     boringssl clang libcap libseccomp libsodium
     zlib.static pkgsStatic.libsodium
-    stdenv.glibc.out stdenv.glibc.static
+    glibc.out glibc.static
   ];
 
   patches = [
