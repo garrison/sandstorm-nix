@@ -69,10 +69,8 @@ in
         cd /var/lib/sandstorm
         mkdir -p var/sandstorm/{apps,grains,downloads} var/{log,pid,mongo}
         ln -fs ${sandstorm}/sandstorm.conf .
-        rm -rf latest
-        mkdir latest
         for dir in $(find ${sandstorm} -type d -empty); do
-          mkdir latest/$(basename $dir)
+          mkdir -p latest/$(basename $dir)
         done
         cp ${sandstorm}/sandstorm latest
         ln -s ${sandstorm}/* latest || true
@@ -80,6 +78,7 @@ in
       '';
       serviceConfig = {
         Type = "forking";
+        BindReadOnlyPaths="/nix:/var/lib/sandstorm/latest/nix";
         ExecStart = "/var/lib/sandstorm/latest/sandstorm start --verbose";
         ExecStop = "/var/lib/sandstorm/latest/sandstorm stop";
         StateDirectory = "sandstorm";
