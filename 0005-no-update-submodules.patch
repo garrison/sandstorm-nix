@@ -1,0 +1,19 @@
+diff --git a/Makefile b/Makefile
+index dcdefa9..e7aa940 100644
+--- a/Makefile
++++ b/Makefile
+@@ -193,14 +193,9 @@ REMOTE_node-capnp=https://github.com/kentonv/node-capnp.git node10
+ REMOTE_boringssl=https://boringssl.googlesource.com/boringssl master
+ REMOTE_clang=https://chromium.googlesource.com/chromium/src/tools/clang.git master
+ 
+-deps/capnproto/.git:
+-	@# Probably user forgot to checkout submodules. Do it for them.
+-	@$(call color,"fetching submodules")
+-	git submodule update --init --recursive
+-
+ deps: tmp/.deps
+ 
+-tmp/.deps: | deps/capnproto/.git
++tmp/.deps:
+ 	@mkdir -p tmp
+ 	@touch tmp/.deps

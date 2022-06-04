@@ -1,0 +1,37 @@
+diff --git a/Makefile b/Makefile
+index dcdefa9..9385d6a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -287,11 +287,11 @@ tmp/.shell-env: tmp/.ekam-run $(IMAGES) shell/imports/client/changelog.html shel
+ 	@mkdir -p tmp
+ 	@mkdir -p node_modules/capnp
+ 	@bash -O extglob -c 'cp src/capnp/!(*test*).capnp node_modules/capnp'
+-	@cd shell/ && PATH=$(METEOR_DEV_BUNDLE)/bin:$$PATH $(METEOR_DEV_BUNDLE)/bin/npm install
++	@cd shell/ && cp -r --no-preserve=ownership,mode @SHELL_NODE_MODULES@ node_modules
+ 	@touch tmp/.shell-env
+ 
+ icons/node_modules: icons/package.json
+-	cd icons && PATH=$(METEOR_DEV_BUNDLE)/bin:$$PATH $(METEOR_DEV_BUNDLE)/bin/npm install
++	cd icons && cp -r --no-preserve=ownership,mode @ICONS_NODE_MODULES@ node_modules && chmod +x node_modules/.bin/*
+ 
+ shell/client/styles/_icons.scss: icons/node_modules icons/*svg icons/Gruntfile.js
+ 	cd icons && PATH=$(METEOR_DEV_BUNDLE)/bin:$$PATH ./node_modules/.bin/grunt
+diff --git a/make-bundle.sh b/make-bundle.sh
+index 4e21754..d1a4489 100755
+--- a/make-bundle.sh
++++ b/make-bundle.sh
+@@ -87,13 +87,7 @@ cp -r shell-build/bundle bundle
+ rm -f bundle/README
+ cp meteor-bundle-main.js bundle/sandstorm-main.js
+ 
+-# Meteor wants us to do `npm install` in the bundle to prepare it.
+-# The fibers package builds native extensions, choosing the target v8 version based on
+-# the version of `/usr/bin/env node`. We need to make it does not pick up the wrong binary,
+-# so we place Meteor's node first on `PATH`.  Additional native extensions require node-pre-gyp,
+-# which lives in the .bin folder of the dev bundle's node_modules.
+-(cd bundle/programs/server && \
+- PATH=$METEOR_DEV_BUNDLE/lib/node_modules/.bin:$METEOR_DEV_BUNDLE/bin:$PATH "$METEOR_DEV_BUNDLE/bin/npm" install)
++cp -r --no-preserve=ownership,mode @SERVER_NODE_MODULES@ bundle/programs/server
+ 
+ # Copy over key binaries.
+ mkdir -p bundle/bin
